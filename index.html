@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Mie Ayam Dardok - Pesan Online & Delivery</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E53935',
+                        primaryDark: '#C62828',
+                        secondary: '#FF9800',
+                        accent: '#FFF3E0',
+                        darkText: '#2D3748'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar & animations */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F1F1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FF9800;
+            border-radius: 10px;
+        }
+        .badge-bounce {
+            animation: bounce 0.5s ease infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-4px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-darkText flex flex-col min-h-screen">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-40 bg-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToTop()">
+                <div class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center font-heading text-2xl font-bold shadow-lg">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading text-xl font-bold text-primary tracking-tight leading-none">MIE AYAM DARDOK</h1>
+                    <p class="text-xs text-gray-500 font-medium mt-0.5"><i class="fa-solid fa-motorcycle text-secondary mr-1"></i> Layanan Antar Makanan Cepat</p>
+                </div>
+            </div>
+
+            <!-- Cart Icon / Mobile Trigger -->
+            <button onclick="toggleCartModal()" class="relative bg-accent hover:bg-orange-100 p-2.5 rounded-full text-primary transition duration-200 focus:outline-none">
+                <i class="fa-solid fa-cart-shopping text-xl"></i>
+                <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">
+                    0
+                </span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Banner Hero -->
+    <section class="bg-gradient-to-r from-primary to-secondary text-white py-8 px-4 shadow-inner">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:text-left">
+                <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">
+                    <i class="fa-solid fa-fire mr-1"></i> Promo Delivery Hari Ini
+                </span>
+                <h2 class="font-heading text-2xl md:text-4xl font-extrabold">Mie Ayam Dengan Bumbu Rempah, Diantar Sampai Rumah!</h2>
+                <p class="text-white/90 text-sm md:text-base max-w-xl">
+                    Nikmati sajian khas favorit keluarga. Bahan segar, higienis, pedasnya sesuai selera Anda.
+                </p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 flex items-center gap-4 text-xs md:text-sm">
+                <div>
+                    <i class="fa-regular fa-clock text-2xl text-yellow-300"></i>
+                </div>
+                <div>
+                    <p class="font-bold">Jam Operasional:</p>
+                    <p class="text-white/90">Setiap Hari: 09.00 - 21.00 WIB</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        <!-- Search & Category Filters -->
+        <section class="mb-8 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <!-- Category Buttons -->
+                <div class="flex overflow-x-auto w-full pb-2 sm:pb-0 space-x-2 no-scrollbar" id="category-container">
+                    <button onclick="filterCategory('all')" class="cat-btn active bg-primary text-white px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition">
+                        <i class="fa-solid fa-border-all mr-1"></i> Semua Menu
+                    </button>
+                    <button onclick="filterCategory('utama')" class="cat-btn bg-white hover:bg-gray-100 text-gray-700 border px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition">
+                        <i class="fa-solid fa-bowl-rice mr-1"></i> Makanan Utama
+                    </button>
+                    <button onclick="filterCategory('paket')" class="cat-btn bg-white hover:bg-gray-100 text-gray-700 border px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition">
+                        <i class="fa-solid fa-box mr-1"></i> Paket Hemat
+                    </button>
+                    <button onclick="filterCategory('camilan')" class="cat-btn bg-white hover:bg-gray-100 text-gray-700 border px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition">
+                        <i class="fa-solid fa-cookie-bite mr-1"></i> Snack / Camilan
+                    </button>
+                    <button onclick="filterCategory('minuman')" class="cat-btn bg-white hover:bg-gray-100 text-gray-700 border px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition">
+                        <i class="fa-solid fa-glass-water mr-1"></i> Minuman
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Grid -->
+        <section id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Menu items will be dynamically rendered here via JS -->
+        </section>
+    </main>
+
+    <!-- Floating Order Bar for Mobile Quick Access -->
+    <div id="floating-cart-bar" class="fixed bottom-4 left-4 right-4 bg-primary text-white p-3 rounded-2xl shadow-2xl flex justify-between items-center sm:hidden z-30 transition-transform transform translate-y-24">
+        <div class="flex items-center space-x-3">
+            <div class="relative">
+                <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                <span id="floating-count" class="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+            </div>
+            <div>
+                <p class="text-xs opacity-90">Total Pesanan</p>
+                <p id="floating-total" class="font-bold text-base">Rp 0</p>
+            </div>
+        </div>
+        <button onclick="toggleCartModal()" class="bg-white text-primary font-bold px-4 py-2 rounded-xl text-sm shadow hover:bg-gray-100">
+            Lihat Keranjang
+        </button>
+    </div>
+
+    <!-- Cart & Checkout Modal Drawer -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-end transition-opacity duration-300">
+        <!-- Drawer Container -->
+        <div class="bg-white w-full max-w-lg h-full flex flex-col shadow-2xl transform transition-transform duration-300">
+            
+            <!-- Modal Header -->
+            <div class="p-4 bg-primary text-white flex justify-between items-center shadow">
+                <h3 class="font-heading font-bold text-lg flex items-center">
+                    <i class="fa-solid fa-cart-shopping mr-2"></i> Keranjang Pemesanan
+                </h3>
+                <button onclick="toggleCartModal()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="flex-grow overflow-y-auto p-4 space-y-6">
+                <!-- Cart Items List -->
+                <div>
+                    <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wider mb-2">Item Dipilih</h4>
+                    <div id="cart-items" class="space-y-3">
+                        <!-- Items rendered dynamically -->
+                        <div class="text-center py-8 text-gray-400">
+                            <i class="fa-solid fa-basket-shopping text-4xl mb-2"></i>
+                            <p>Keranjang belanja masih kosong.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Form (Shown if cart not empty) -->
+                <div id="checkout-form-section" class="hidden border-t pt-4 space-y-4">
+                    <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wider">Data Pengiriman (Antar Makanan)</h4>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Nama Pemesan *</label>
+                            <input type="text" id="cust-name" placeholder="Contoh: Budi Santoso" class="w-full text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Nomor WhatsApp *</label>
+                            <input type="tel" id="cust-phone" placeholder="Contoh: 081234567890" class="w-full text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Alamat Lengkap Pengiriman *</label>
+                            <textarea id="cust-address" rows="2" placeholder="Nama Jalan, No. Rumah, RT/RW, Kecamatan" class="w-full text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Catatan Lokasi / Patokan</label>
+                            <input type="text" id="cust-notes" placeholder="Contoh: Pagar warna hijau, dekat masjid" class="w-full text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Metode Pembayaran</label>
+                            <select id="pay-method" class="w-full text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none bg-white">
+                                <option value="Bayar di Tempat (COD)">Bayar di Tempat (COD)</option>
+                                <option value="Transfer Bank (BCA/Mandiri)">Transfer Bank</option>
+                                <option value="E-Wallet (Gopay/OVO/Dana/ShopeePay)">E-Wallet (Gopay/OVO/Dana)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Summary -->
+                <div id="cart-summary" class="hidden border-t pt-4 space-y-2 bg-gray-50 p-3 rounded-lg text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal Makanan</span>
+                        <span id="summary-subtotal">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Ongkos Kirim (Flat Area)</span>
+                        <span id="summary-shipping">Rp 5.000</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-base text-gray-900 border-t pt-2">
+                        <span>Total Pembayaran</span>
+                        <span id="summary-total" class="text-primary">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer / Checkout Action -->
+            <div class="p-4 border-t bg-gray-50">
+                <button id="checkout-btn" onclick="sendOrderToWhatsApp(+6285325042469)" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-3 px-4 rounded-xl shadow cursor-not-allowed flex justify-center items-center gap-2 transition duration-200">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Kirim Pesanan via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-20 right-4 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-xl text-sm font-semibold z-50 transition transform translate-x-full opacity-0 flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">Item berhasil ditambahkan!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 mt-12 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+            <div>
+                <h3 class="font-heading font-bold text-white text-base mb-3 flex items-center">
+                    <i class="fa-solid fa-store text-secondary mr-2"></i> Mie Ayam Dardok
+                </h3>
+                <p class="text-gray-400 leading-relaxed">
+                    Menyajikan hidangan Mie Ayam dengan bumbu rempah pilihan. Melayani pesan antar untuk area sekitar.
+                </p>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-white text-base mb-3">Kontak & Lokasi</h3>
+                <p class="mb-1"><i class="fa-solid fa-location-dot mr-2 text-secondary"></i> Jl. Raya Pemuda No. 45, Kota</p>
+                <p class="mb-1"><i class="fa-brands fa-whatsapp mr-2 text-secondary"></i> 0812-3456-7890</p>
+                <p><i class="fa-regular fa-clock mr-2 text-secondary"></i> Buka 09.00 - 21.00 WIB</p>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-white text-base mb-3">Informasi Antar Makanan</h3>
+                <ul class="text-gray-400 space-y-1 text-xs">
+                    <li>• Gratis ongkir untuk jarak di bawah 2 km (Syarat & Ketentuan berlaku).</li>
+                    <li>• Ongkir Flat Rp 5.000 untuk pengiriman umum area kota.</li>
+                    <li>• Pengiriman aman dikemas higienis.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="bg-gray-950 py-4 text-center text-xs text-gray-500">
+            &copy; 2026 Mie Ayam Dardok. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Data Menu Warung Makan
+        const menuItems = [
+            {
+                id: 1,
+                name: "Ayam Goreng Lengkuas + Nasi",
+                category: "utama",
+                price: 22000,
+                desc: "Ayam goreng rempah gurih dengan taburan kremes lengkuas, nasi hangat, dan sambal terasi.",
+                image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&auto=format&fit=crop&q=60",
+                spicyOption: true
+            },
+            {
+                id: 2,
+                name: "Nasi Goreng Spesial Seleraku",
+                category: "utama",
+                price: 20000,
+                desc: "Nasi goreng bumbu khas dengan telur ceplok, suwiran ayam, dan kerupuk renyah.",
+                image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&auto=format&fit=crop&q=60",
+                spicyOption: true
+            },
+            {
+                id: 3,
+                name: "Soto Ayam Madura",
+                category: "utama",
+                price: 18000,
+                desc: "Soto ayam kuah kuning kaya rempah dengan soun, telur rebus, dan koya gurih.",
+                image: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=500&auto=format&fit=crop&q=60",
+                spicyOption: false
+            },
+            {
+                id: 4,
+                name: "Paket Hemat 1: Nasi Ayam Sambal Matah",
+                category: "paket",
+                price: 25000,
+                desc: "Nasi + Ayam Popcorn Sambal Matah Segar + Es Teh Manis.",
+                image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&auto=format&fit=crop&q=60",
+                spicyOption: true
+            },
+            {
+                id: 5,
+                name: "Paket Hemat 2: Nasi Lele Terbang",
+                category: "paket",
+                price: 21000,
+                desc: "Nasi + Lele Crisp Kering + Tahu Tempe + Sambal Lalapan + Es Teh.",
+                image: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=60",
+                spicyOption: true
+            },
+            {
+                id: 6,
+                name: "Tahu & Tempe Penyet",
+                category: "camilan",
+                price: 10000,
+                desc: "Tahu dan tempe goreng dipenyet di atas sambal korek pedas mantap.",
+                image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60",
+                spicyOption: true
+            },
+            {
+                id: 7,
+                name: "Bakwan / Bala-bala Krenyes (3 pcs)",
+                category: "camilan",
+                price: 8000,
+                desc: "Gorengan sayur gurih renyah disajikan dengan cabai rawit segar.",
+                image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format&fit=crop&q=60",
+                spicyOption: false
+            },
+            {
+                id: 8,
+                name: "Es Teh Manis Jumbo",
+                category: "minuman",
+                price: 5000,
+                desc: "Teh seduh alami segar dengan gula asli ukuran jumbo.",
+                image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&auto=format&fit=crop&q=60",
+                spicyOption: false
+            },
+            {
+                id: 9,
+                name: "Es Jeruk Peras Segar",
+                category: "minuman",
+                price: 7000,
+                desc: "Jeruk peras murni kaya vitamin C dengan es batu.",
+                image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=500&auto=format&fit=crop&q=60",
+                spicyOption: false
+            }
+        ];
+
+        // Flat delivery rate
+        const SHIPPING_FEE = 5000;
+        
+        // Cart State
+        let cart = [];
+
+        // Format Currency Helper
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+        }
+
+        // Render Menu Cards
+        function renderMenu(category = 'all') {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+
+            const filtered = category === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === category);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between border border-gray-100 group";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative overflow-hidden">
+                            <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='https://placehold.co/500x300/E53935/FFF?text=Warung+Seleraku';">
+                            <!-- Prominent Visible Price Tag Badge -->
+                            <div class="absolute top-3 right-3 bg-primary text-white font-heading font-extrabold text-sm px-3 py-1.5 rounded-full shadow-lg border-2 border-white flex items-center gap-1">
+                                <i class="fa-solid fa-tag text-xs text-yellow-300"></i>
+                                <span>${formatRupiah(item.price)}</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <!-- Explicit Title & Sub-Price Banner -->
+                            <div class="flex justify-between items-start gap-2 mb-1">
+                                <h3 class="font-heading font-bold text-gray-800 text-base leading-snug">${item.name}</h3>
+                            </div>
+                            <p class="text-primary font-bold text-sm mb-2"><i class="fa-solid fa-coins text-xs mr-1 text-secondary"></i>Harga: ${formatRupiah(item.price)}</p>
+                            <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-3">${item.desc}</p>
+                            
+                            <!-- Custom Options inside Card -->
+                            <div class="space-y-2 mb-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                                ${item.spicyOption ? `
+                                    <div class="flex items-center justify-between text-xs">
+                                        <label class="font-medium text-gray-600"><i class="fa-solid fa-pepper-hot text-red-500 mr-1"></i>Level Pedas:</label>
+                                        <select id="spicy-${item.id}" class="border rounded-lg px-2 py-1 text-xs bg-white text-gray-700 focus:outline-none border-gray-200">
+                                            <option value="Tidak Pedas">Tidak Pedas</option>
+                                            <option value="Sedang">Sedang 🌶️</option>
+                                            <option value="Pedas Banget">Pedas Banget 🌶️🌶️</option>
+                                        </select>
+                                    </div>
+                                ` : ''}
+                                <div class="flex items-center justify-between text-xs">
+                                    <input type="text" id="note-${item.id}" placeholder="Catatan khusus (cth: tanpa kubis)" class="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <button onclick="addToCart(${item.id})" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 transition shadow-md active:scale-95">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Tambah - ${formatRupiah(item.price)}</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter Category Functionality
+        function filterCategory(cat) {
+            // Update button styles
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700');
+            });
+
+            event.currentTarget.classList.remove('bg-white', 'text-gray-700');
+            event.currentTarget.classList.add('bg-primary', 'text-white');
+
+            renderMenu(cat);
+        }
+
+        // Add to Cart Logic
+        function addToCart(id) {
+            const item = menuItems.find(m => m.id === id);
+            
+            // Get option values
+            const spicyElem = document.getElementById(`spicy-${id}`);
+            const spicyLevel = spicyElem ? spicyElem.value : null;
+
+            const noteElem = document.getElementById(`note-${id}`);
+            const note = noteElem ? noteElem.value.trim() : '';
+
+            // Unique key for item with specific option
+            const cartItemIndex = cart.findIndex(c => c.id === id && c.spicyLevel === spicyLevel && c.note === note);
+
+            if (cartItemIndex > -1) {
+                cart[cartItemIndex].qty += 1;
+            } else {
+                cart.push({
+                    ...item,
+                    qty: 1,
+                    spicyLevel: spicyLevel,
+                    note: note
+                });
+            }
+
+            // Reset inputs
+            if (noteElem) noteElem.value = '';
+
+            updateCartUI();
+            showToast(`"${item.name}" ditambahkan!`);
+        }
+
+        // Update Cart UI, Badges, and Totals
+        function updateCartUI() {
+            const cartContainer = document.getElementById('cart-items');
+            const badge = document.getElementById('cart-badge');
+            const floatingBar = document.getElementById('floating-cart-bar');
+            const floatingCount = document.getElementById('floating-count');
+            const floatingTotal = document.getElementById('floating-total');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const formSection = document.getElementById('checkout-form-section');
+            const summarySection = document.getElementById('cart-summary');
+
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const grandTotal = subtotal > 0 ? subtotal + SHIPPING_FEE : 0;
+
+            // Update Badges
+            if (totalQty > 0) {
+                badge.textContent = totalQty;
+                badge.classList.remove('hidden');
+                floatingCount.textContent = totalQty;
+                floatingTotal.textContent = formatRupiah(grandTotal);
+                floatingBar.classList.remove('translate-y-24');
+                
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                checkoutBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700', 'text-white');
+                
+                formSection.classList.remove('hidden');
+                summarySection.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+                floatingBar.classList.add('translate-y-24');
+
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                checkoutBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700', 'text-white');
+
+                formSection.classList.add('hidden');
+                summarySection.classList.add('hidden');
+            }
+
+            // Render Items inside Modal
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-2"></i>
+                        <p>Keranjang belanja masih kosong.</p>
+                    </div>
+                `;
+            } else {
+                cartContainer.innerHTML = cart.map((item, index) => `
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <div class="flex-grow pr-2">
+                            <h5 class="font-bold text-xs text-gray-800">${item.name}</h5>
+                            <p class="text-xs text-primary font-semibold">${formatRupiah(item.price)}</p>
+                            ${item.spicyLevel ? `<span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded">${item.spicyLevel}</span>` : ''}
+                            ${item.note ? `<p class="text-[11px] text-gray-500 italic">" ${item.note} "</p>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="changeQty(${index}, -1)" class="w-6 h-6 bg-gray-200 text-gray-700 rounded-full text-xs font-bold flex items-center justify-center hover:bg-gray-300">-</button>
+                            <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)" class="w-6 h-6 bg-gray-200 text-gray-700 rounded-full text-xs font-bold flex items-center justify-center hover:bg-gray-300">+</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update Summary Display
+            document.getElementById('summary-subtotal').textContent = formatRupiah(subtotal);
+            document.getElementById('summary-shipping').textContent = formatRupiah(SHIPPING_FEE);
+            document.getElementById('summary-total').textContent = formatRupiah(grandTotal);
+        }
+
+        // Change Quantity in Cart
+        function changeQty(index, change) {
+            cart[index].qty += change;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        // Modal Controls
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Send Order to WhatsApp Logic
+        function sendOrderToWhatsApp() {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const address = document.getElementById('cust-address').value.trim();
+            const notes = document.getElementById('cust-notes').value.trim();
+            const payMethod = document.getElementById('pay-method').value;
+
+            // Form validation
+            if (!name || !phone || !address) {
+                alert('Mohon lengkapi Nama, Nomor WhatsApp, dan Alamat Lengkap Pengiriman!');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const grandTotal = subtotal + SHIPPING_FEE;
+
+            // Format WhatsApp Message
+            let message = `*HALO MIE AYAM DARDOK, SAYA MAU PESAN DELIVERY*\n\n`;
+            message += `*📋 DETAIL PESANAN:*\n`;
+            
+            cart.forEach((item, i) => {
+                message += `${i + 1}. *${item.name}* x${item.qty}\n`;
+                if (item.spicyLevel) message += `   • Level: ${item.spicyLevel}\n`;
+                if (item.note) message += `   • Catatan: ${item.note}\n`;
+                message += `   • Harga: ${formatRupiah(item.price * item.qty)}\n\n`;
+            });
+
+            message += `-----------------------------------\n`;
+            message += `*Subtotal:* ${formatRupiah(subtotal)}\n`;
+            message += `*Ongkos Kirim:* ${formatRupiah(SHIPPING_FEE)}\n`;
+            message += `*TOTAL PEMBAYARAN:* *${formatRupiah(grandTotal)}*\n`;
+            message += `-----------------------------------\n\n`;
+
+            message += `*🛵 DATA PENGIRIMAN:*\n`;
+            message += `• *Nama Pemesan:* ${name}\n`;
+            message += `• *No. WA:* ${phone}\n`;
+            message += `• *Alamat:* ${address}\n`;
+            if (notes) message += `• *Patokan/Catatan:* ${notes}\n`;
+            message += `• *Metode Bayar:* ${payMethod}\n\n`;
+            message += `Mohon segera diproses ya, terima kasih! 🙏`;
+
+            // Replace with actual shop WhatsApp number (format International without +)
+            const shopPhoneNumber = "6285325042469"; 
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${shopPhoneNumber}?text=${encodedMessage}`;
+
+            // Open WhatsApp Link
+            window.open(waUrl,'https://web.whatsapp.com/');
+        }
+
+        // Toast Notification Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = msg;
+
+            toast.classList.remove('translate-x-full', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+            }, 2500);
+        }
+
+        // Scroll helper
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initial Render
+        window.onload = function() {
+            renderMenu('all');
+        }
+    </script>
+</body>
+</html>
